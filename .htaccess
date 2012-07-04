@@ -1,0 +1,12 @@
+Options +FollowSymLinks
+
+# Comment out when on local site
+# AddType x-mapp-php5 .php
+#RewriteBase /
+
+RewriteEngine On
+
+# if it exists as a file
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteRule ^ index.php
