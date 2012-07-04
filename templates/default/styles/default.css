@@ -1,0 +1,18 @@
+* {
+    margin: 0px auto;
+}
+
+body {
+    font-family: "Segoe UI", Helvetica;
+    font-size: 12pt;
+    text-align: center;
+}
+
+#footer {
+    font-size: .85em;
+}
+
+#page-content {
+    text-align: left;
+    width: 90%;
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<configuration>
+  <routes>
+    <key name="default_controller" value="welcome" />
+    <key name="default_view" value="view" />
+  </routes>
+  <configuration>
+  	<key name="siteTitle" value="{SITETITLE}" />
+  	<key name="appVersion" value="{APPVERSION}" />
+    <key name="default_template" value="default" />
+    <key name="database" value="{CONNECTION_NAME}" />
+    <key name="sessionlength" value="5" />
+  	<key name="cookiename" value="bounce" />
+  	<key name="cookiepath" value="/" />
+  	<key name="cookiedomain" value="." />    
+  	<key name="rootpath" value="" /><!-- on Unix hosting, this will probably need to be configured -->
+  	<key name="servicetype" value="json" />
+  </configuration>
+  <debug>
+    <value name="enabled" value="0" />
+  </debug>
+  <directories>
+    <key name="controllers" value="/controllers" />
+    <key name="views" value="/views" />
+    <key name="base" value="/core" />
+    <key name="templates" value="/templates" />
+    <key name="userlibs" value="/libraries" />
+    <key name="includes" value="/includes" />
+    <key name="model" value="/model" />
+    <key name="resource" value="/resources" />
+    <key name="services" value="/services" />     
+  </directories>
+{DATABASE_XML}
+</configuration>

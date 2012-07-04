@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+<title>Database Configuration Error</title>
+<link rel="stylesheet" type="text/css" href="<?= HTTP_ROOT ?>/errors/styles/error.css" />
+</head>
+<body>
+<h1>Database Error</h1>
+<p>There was an error processing your request</p>
+<p><?php
+    $configuration = Configuration::GetInstance( );
+      
+    if( $configuration[ "debug"][ "enabled"] == "1")
+        echo $error->getMessage( );
+        echo "<br />";
+        echo "Page: " . $error->getFile();
+        echo "<br />";
+        echo "Stack: " . $error->getTraceAsString();
+   ?></p>
+</body>
+</html>

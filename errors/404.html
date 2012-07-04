@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Not Found</title>
+<link rel="stylesheet" type="text/css" href="<?= HTTP_ROOT ?>/errors/styles/error.css" />
+</head>
+<body>
+<h1>Page Not Found</h1>
+<p>The page you requested was not available, please try again later.</p>
+<p><?php
+    $configuration = Configuration::GetInstance( );
+      
+    if( $configuration[ "debug"][ "enabled"] == "1")
+        echo $error->getMessage( );
+        echo "<br />";
+        echo "Page: " . $error->getFile();
+        echo "<br />";
+        echo "Stack: " . $error->getTraceAsString();
+   ?></p>
+</body>
+</html>

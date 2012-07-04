@@ -1,0 +1,15 @@
+Email Plugin
+
+Copy this email directory into the libraries directory in your bounce Framework installation.
+
+Add the following lines into your configuration.xml in the core directory of your bounce Framework installation;
+
+<email>
+<value name="submitemail" value="YOUREMAILADDRESSHERE" />
+<value name="fromemail" value="FROMEMAILADDRESSHERE" />
+<value name="replyto" value="REPLYTOEMAILADDRESSHERE" />
+</email>
+
+Submit Email - The email address that will receive emails from the site
+From Email - The email address the email will originate from 
+Reply To - The email address that will be put into the reply to email address of the email

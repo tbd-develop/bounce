@@ -1,0 +1,9 @@
+Options +FollowSymLinks 
+
+# Comment out when on local site
+# AddType x-mapp-php5 .php
+RewriteBase /
+
+<limit GET POST PUT DELETE>
+	require valid-user
+</limit>
