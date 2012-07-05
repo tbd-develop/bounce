@@ -3,8 +3,8 @@
 }
 
 body {
-    font-family: "Segoe UI", Helvetica;
-    font-size: 12pt;
+    font-family: "Segoe UI", Helvetica, arial;
+    font-size: 11pt;
     text-align: center;
 }
 
@@ -15,4 +15,40 @@ body {
 #page-content {
     text-align: left;
     width: 90%;
+}
+
+.header {
+    margin: 0px 0px 10px 0px;
+}
+
+form.small {
+    width: 50%;
+}
+
+form .field {
+    display: block;
+    height: 34px;
+}
+
+form h4, h5 {
+    font-size: 1.1em;
+    text-transform: lowercase;
+}
+
+form .field .label {
+    font-weight: bold;
+    min-width: 120px;
+    display: inline-block;
+    float: left;
+    text-align: right;
+    padding-right: 5px;
+    line-height: 24px;
+}
+
+form .field .label:after {
+    content: ':'
+}
+
+form .button-panel {
+    text-align: center;
 }
