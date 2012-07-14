@@ -26,7 +26,7 @@ class Application
     {
         if( self::$applicationRouter == null)
         {
-            self::$applicationRouter = new ApplicationRouter(Configuration::GetInstance(), RouteRegister::GetInstance());
+            self::$applicationRouter = new ApplicationRouter(SimpleConfiguration::GetInstance(), RouteRegister::GetInstance());
         }
 
         return self::$applicationRouter;

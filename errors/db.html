@@ -8,9 +8,9 @@
 <h1>Database Error</h1>
 <p>There was an error processing your request</p>
 <p><?php
-    $configuration = Configuration::GetInstance( );
+    $configuration = SimpleConfiguration::GetInstance( );
       
-    if( $configuration[ "debug"][ "enabled"] == "1")
+    if( $configuration->GetSetting('debug','enabled') == "1")
         echo $error->getMessage( );
         echo "<br />";
         echo "Page: " . $error->getFile();

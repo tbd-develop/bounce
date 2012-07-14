@@ -27,10 +27,10 @@
 		
 		public function __construct( $subject, $content, $from = null, $replyto = null )
 		{
-			$configuration = Configuration::GetInstance( );
+			$configuration = SimpleConfiguration::GetInstance( );
             $this->_configuration = $configuration;
 			
-			if( isset( $configuration[ 'email']))
+			if( $configuration->HasSetting('email'))
 			{
 				$sender = $from == null ? $configuration[ 'email'][ 'fromemail'] : $from;
 				$reply = $replyto == null ? $configuration[ 'email'][ 'replyto'] : $replyto;
@@ -44,7 +44,7 @@
 		
 		public function Send( $to = null )
 		{
-			return mail( isset( $to) ? $to : $this->_configuration['email']['submitemail'], $this->_subject, $this->_content, $this->_header);
+			return mail( isset( $to) ? $to : $this->_configuration->GetSetting('email', 'submitemail'), $this->_subject, $this->_content, $this->_header);
 		}
 	}
 ?>

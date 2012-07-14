@@ -24,20 +24,21 @@
 
 class Install extends Controller
 {
+    private $DirSep = DIRECTORY_SEPARATOR;
+
     public function index() {
         return $this->View( "default");
     }
 
     public function listdatabases() {
-        $slash = DIRECTORY_SEPARATOR;
-        $searchPath = ROOT_PATH . "{$slash}core{$slash}configuration";
+        $searchPath = ROOT_PATH . "{$this->DirSep}core{$this->DirSep}configuration";
 
         if( $directory = opendir($searchPath)) {
             $configurations = array();
 
             while( false !== ($entry = readdir($directory))) {
                 if( preg_match("/-database.json/", $entry)) {
-                    $fileContent = file_get_contents("{$searchPath}{$slash}{$entry}");
+                    $fileContent = file_get_contents("{$searchPath}{$this->DirSep}{$entry}");
 
                     array_push($configurations, json_decode($fileContent));
                 }
@@ -49,8 +50,7 @@ class Install extends Controller
 
     public function createdatabase( DatabaseConfiguration $configuration) {
         $settings = json_encode($configuration);
-        $slash = DIRECTORY_SEPARATOR;
-        $filename = ROOT_PATH . "{$slash}core{$slash}configuration{$slash}{$configuration->profilename}-database.json";
+        $filename = ROOT_PATH . "{$this->DirSep}core{$this->DirSep}configuration{$this->DirSep}{$configuration->profilename}-database.json";
 
         if( file_put_contents("{$filename}", $settings) > 0 ) {
             return $this->Json(json_decode($settings));
@@ -60,6 +60,14 @@ class Install extends Controller
     }
 
     public function createprofile(SiteProfile $profile) {
+        $settings = json_encode($profile);
+
+        $filename = ROOT_PATH . "{$this->DirSep}core{$this->DirSep}configuration{$this->DirSep}{$profile->profilename}-site.json";
+
+        if( file_put_contents("{$filename}", $settings) > 0 ) {
+            return $this->Json(json_decode($settings));
+        }
+
         return $this->Json("FAIL");
     }
 }

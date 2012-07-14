@@ -1,25 +1,6 @@
 <?xml version="1.0"?>
 <configuration>
-    <debug>
-        <value name="enabled" value="1" />
-    </debug>
-    <routes>
-        <value name="default_controller" value="install" />
-        <value name="default_view" value="index" />
-    </routes>
-    <directories>
-        <key name="controllers" value="/controllers" />
-        <key name="areas" value="/areas" />
-        <key name="views" value="/views" />
-        <key name="base" value="/core" />
-        <key name="templates" value="/templates" />
-        <key name="userlibs" value="/libraries" />
-        <key name="includes" value="/includes" />
-        <key name="models" value="/models" />
-        <key name="resource" value="/resources" />
-        <key name="services" value="/services" />
-    </directories>
-    <configuration>
+    <defaults>
         <key name="siteTitle" value="Bounce PHP" />
         <key name="appVersion" value="1.0.0.0" />
         <key name="default_template" value="default" />
@@ -27,34 +8,52 @@
         <key name="siteprofile" value="devsite" />
         <key name="servicetype" value="json" />
         <key name="scripts-directory" value="/scripts/" />
-    </configuration>
-
+    </defaults>
+    <debug>
+        <key name="enabled" value="1" />
+    </debug>
+    <routes>
+        <key name="default_controller" value="install" />
+        <key name="default_view" value="index" />
+    </routes>
+    <directories>
+        <key name="base" value="/core" />
+        <key name="controllers" value="/controllers" />
+        <key name="areas" value="/areas" />
+        <key name="views" value="/views" />
+        <key name="templates" value="/templates" />
+        <key name="userlibs" value="/libraries" />
+        <key name="includes" value="/includes" />
+        <key name="models" value="/models" />
+        <key name="resource" value="/resources" />
+        <key name="services" value="/services" />
+    </directories>
     <devsite>
         <key name="rootpath" value="/var/www/Demo/bounce" />
         <key name="database" value="dummy" />
-        <key name="cookiename" value="bounce-dev" />
+        <key name="cookiename" value="bouncedev" />
         <key name="cookiepath" value="/" />
         <key name="cookiedomain" value="." />
     </devsite>
 
     <dummy>
-        <value name="connector" value="DummyConnector" />
-        <value name="host" value="localhost" />
-        <value name="database" value="mortong_newdb" />
-        <value name="username" value="mortong" />
-        <value name="password" value="golfing" />
+        <key name="connector" value="DummyConnector" />
+        <key name="host" value="localhost" />
+        <key name="database" value="mortong_newdb" />
+        <key name="username" value="mortong" />
+        <key name="password" value="golfing" />
     </dummy>
     <debug>
-        <value name="connector" value="MysqliConnector" />
-        <value name="host" value="localhost" />
-        <value name="database" value="mortong_newdb" />
-        <value name="username" value="mortong" />
-        <value name="password" value="golfing" />
+        <key name="connector" value="MysqliConnector" />
+        <key name="host" value="localhost" />
+        <key name="database" value="mortong_newdb" />
+        <key name="username" value="mortong" />
+        <key name="password" value="golfing" />
     </debug>
 
 	<email>
         <!-- configuration values
-		<value name="key" value="Value" />
+		<key name="key" value="Value" />
         -->
 	</email>
 </configuration>

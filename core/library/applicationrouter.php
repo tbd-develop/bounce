@@ -20,21 +20,19 @@
 
 class ApplicationRouter
 {
-    private static $ArgumentNameIdx = 0;
-    private static $ArgumentValueIdx = 1;
     private $_controller;
     private $_view;
     private $_configuration;
     private $_routeConfiguration;
     private $_renderer;
 
-    public function __construct(IConfiguration $configuration,
+    public function __construct($configuration,
                                 IRouteRegister $routeconfiguration)
     {
         $this->_configuration = $configuration;
 
-        $this->_controller = $this->_configuration["routes"]["default_controller"];
-        $this->_view = $this->_configuration["routes"]["default_view"];
+        $this->_controller = $this->_configuration->GetSetting("routes", "default_controller");
+        $this->_view = $this->_configuration->GetSetting("routes", "default_view");
 
         $this->_routeConfiguration = $routeconfiguration;
 
@@ -110,7 +108,12 @@ class ApplicationRouter
                         $result = $method->invoke($controllerInstance);
                 }
                 else
-                    throw new Exception("Method ${$route->GetMethod()} not supported on ${$route->GetController()}");
+                {
+                    $method = $route->GetMethod();
+                    $controller = $route->GetController();
+
+                    throw new Exception("Method ${method} not supported on ${controller}");
+                }
             }
         }
         else

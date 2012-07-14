@@ -1,8 +1,8 @@
 <?php
 /*
-	bounce Framework - Base Model class
+	bounce framework - iconfiguration.php 
 	
-    Copyright (C) 2012, 2009, 2010  Terry Burns-Dyson
+    Copyright (C) 2012  Terry Burns-Dyson
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,18 +16,13 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-  abstract class Model 
-  {
-    protected $_database;
-    protected $_configuration;
     
-    public function __construct( )
-    {
-      	$this->_configuration = SimpleConfiguration::GetInstance( );
-      	$this->_database = Database::Connection( );     
-    }   
-  }
-
-?>
+    Created with JetBrains PhpStorm
+    Date: 7/5/12
+    Time: 7:18 AM    
+*/
+interface IConfiguration extends ArrayAccess
+{
+    function GetSitePath($configurationNode, $configurationElement );
+    function Load($configurationFile);
+}

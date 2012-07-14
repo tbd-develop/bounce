@@ -36,7 +36,7 @@ class RouteRegister implements IRouteRegister
 	private $_routes;
 	private $_areas;
 
-	private function __construct(IConfiguration $configuration) {
+	private function __construct($configuration) {
 		$this->_configuration = $configuration;
 		$this->_routes = array();
 		$this->_areas = array( );
@@ -46,7 +46,7 @@ class RouteRegister implements IRouteRegister
 		if (!isset(self::$_instance)) {		
 			$c = __CLASS__;
 
-            self::$_instance = new $c(Configuration::GetInstance());
+            self::$_instance = new $c(SimpleConfiguration::GetInstance());
             self::$_instance->RegisterRoutes( );
         }
 
@@ -55,7 +55,7 @@ class RouteRegister implements IRouteRegister
 		
 	public function RegisterRoutes( ) 
 	{	
-		foreach( $this->_configuration[ "directories"] as $key => $directory)
+		foreach( $this->_configuration->GetSettingsCollection("directories") as $key => $directory)
 		{					
 			$this->ScanDirectory( ROOT_PATH . $directory);			
 		}

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<configuration>
+  <test>
+    <add key="test1" value="test2"/>
+  </test>
+</configuration>

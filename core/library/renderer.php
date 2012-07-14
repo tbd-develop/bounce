@@ -26,7 +26,7 @@
 
     private function __construct( )
     {
-      $this->_configuration = Configuration::GetInstance( );
+      $this->_configuration = SimpleConfiguration::GetInstance( );
       $this->_session = Session::GetInstance( );
     }
     
@@ -55,9 +55,9 @@
 
         $userTheme = $user->getTheme();
 
-        $template = $userTheme != null ? $userTheme : $this->_configuration[ 'configuration'][ 'default_template'];
+        $template = $userTheme != null ? $userTheme : $this->_configuration->GetSetting('defaults', 'default_template');
 
-        $filePath =  ROOT_PATH . $this->_configuration[ 'directories'][ 'templates'] .DIRSEP . $template . DIRSEP . $fileName;
+        $filePath =  ROOT_PATH . $this->_configuration->GetSetting('directories','templates') .DIRSEP . $template . DIRSEP . $fileName;
 
         header('Content-Type: image/jpg');
         header('Content-Length: ' . filesize($filePath));
@@ -90,7 +90,7 @@
 
             $userTheme = $user->getTheme();
 							
-		    $template = $userTheme != null ? $userTheme : $this->_configuration[ 'configuration'][ 'default_template'];
+		    $template = $userTheme != null ? $userTheme : $this->_configuration->GetSetting('defaults', 'default_template');
 
 			$view = $this->FindViewTemplate( $controllerName, $controller->GetArea(), $viewName);
 
@@ -98,10 +98,10 @@
 				throw new Exception( "Failed to load '${viewName}'");
 			}
 							
-			$params[ 'template'] = HTTP_ROOT . $this->_configuration[ 'directories'][ 'templates'] . "/" . $template;
-			$params[ 'library'] = HTTP_ROOT . $this->_configuration[ 'directories']['userlibs'];
-			$params[ 'siteTitle'] = $this->_configuration[ "configuration"][ "siteTitle"];
-            $params[ 'configuration'] = $this->_configuration['configuration'];
+			$params[ 'template'] = HTTP_ROOT . $this->_configuration->GetSetting( 'directories','templates') . "/" . $template;
+			$params[ 'library'] = HTTP_ROOT . $this->_configuration->GetSetting('directories', 'userlibs');
+			$params[ 'siteTitle'] = $this->_configuration->GetSetting( "defaults", "siteTitle");
+            $params[ 'configuration'] = $this->_configuration->GetSettingsCollection('defaults');
 			$params[ 'controller'] = $controller;
             $params[ 'user'] = $user;
 			$params[ 'viewdata'] = new ViewData();
@@ -116,13 +116,13 @@
 			// Include any additional includes as separate compiles but set them as parameters 
 			// for our final page load
 			
-			$includes = $this->_configuration[ 'includes'];
+			$includes = $this->_configuration->GetSettingsCollection('includes');
 			
 			if( sizeof( $includes) > 0 )
 			{			
 				foreach( $includes as $key => $value)
 				{					
-					$viewToInclude = ROOT_PATH . $this->_configuration[ 'directories'][ 'includes'] . DIRSEP . "${value}";												
+					$viewToInclude = ROOT_PATH . $this->_configuration->GetSetting('directories', 'includes') . DIRSEP . "${value}";
 					
 					$params[ $key] = $this->Compile( $viewToInclude, $isPartial, $params);
 				}
@@ -131,7 +131,7 @@
 			if( !$isPartial)
 			{
 				// Now compile the default_pagebody with all that has come before
-				$output = $this->Compile( ROOT_PATH . $this->_configuration[ 'directories'][ 'templates'] . 
+				$output = $this->Compile( ROOT_PATH . $this->_configuration->GetSetting('directories', 'templates') .
 								DIRSEP . $template . DIRSEP . "default_pagebody.html", $isPartial, $params);
 								
 				echo $output;

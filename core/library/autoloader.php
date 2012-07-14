@@ -9,16 +9,15 @@
 		
 		public function loader($className) 
 		{
-			$configuration = Configuration::GetInstance( );			
-    
-    		if( isset( $configuration))
-    		{    	
-				foreach( $configuration[ "directories"] as $directory)
-				{
-					if( $this->CheckDir( ROOT_PATH . $directory, strtolower( $className)))
-						break;
-				}
-    		} 
+			$configuration = SimpleConfiguration::GetInstance( );
+
+            $directoryList = $configuration->GetSettingsCollection('directories');
+
+            foreach( $directoryList as $key => $directory)
+            {
+                if( $this->CheckDir( ROOT_PATH . $directory, strtolower( $className)))
+                    break;
+            }
 		}
 		
 		public function CheckDir( $directory, $classname)

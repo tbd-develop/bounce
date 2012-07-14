@@ -17,11 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-interface IConfiguration extends ArrayAccess
-{
-	function GetSitePath($configurationNode, $configurationElement );
-    function Load($configurationFile);
-}
+  require_once( 'iconfiguration.php');
 
   class Configuration implements IConfiguration
   {

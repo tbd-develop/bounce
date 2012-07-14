@@ -17,46 +17,46 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-  session_start( );
+    session_start( );
 
-  include_once( 'library/autoloader.php');
-  include_once( 'library/configuration.php');
-  include_once( 'library/overrides.php');
-  
-  $autoloader = new AutoLoader();
-  
-  define( 'DIRSEP', DIRECTORY_SEPARATOR);
-  define( 'HTTP_ROOT', "http://" . $_SERVER[ 'HTTP_HOST'] );
-  
-  // Load the configuration script
-  Configuration::Load( realpath( dirname( __FILE__ ) . DIRSEP . "configuration.xml" ));
+    include_once( 'library/autoloader.php');
+    include_once('library/configuration/simpleconfiguration.php');
+    include_once( 'library/overrides.php');
 
-  // Get an instance to use in the immediate
-	$configuration = Configuration::GetInstance( );
+    $autoloader = new AutoLoader();
 
-    $siteprofile = $configuration['configuration']['siteprofile'];
+    define( 'DIRSEP', DIRECTORY_SEPARATOR);
+    define( 'HTTP_ROOT', "http://" . $_SERVER[ 'HTTP_HOST'] );
+
+    // Load the configuration script
+    SimpleConfiguration::Load( realpath( dirname( __FILE__ ) . DIRSEP . "configuration.xml" ));
+
+    // Get an instance to use immediately
+	$configuration = SimpleConfiguration::GetInstance( );
+
+    $siteprofile = $configuration->GetSetting('defaults', 'siteprofile', 'default');
 
 	$rootPath = trim( realpath( dirname( __FILE__) . '..' . DIRSEP . '..' ));
-  				 
-    $rootPath = !empty( $rootPath) ? realpath( dirname( __FILE__) . '..' . DIRSEP . '..' ) : 
-				$configuration[ $siteprofile]['rootpath'];
 
-   define( 'ROOT_PATH', $rootPath);
-  
+    $rootPath = !empty( $rootPath) ? realpath( dirname( __FILE__) . '..' . DIRSEP . '..' ) :
+				$configuration->GetSetting( $siteprofile, 'rootpath');
+
+    define( 'ROOT_PATH', $rootPath);
+
 	try
   	{
           $database = Database::Connection( );
   	}
   	catch(DatabaseException $dbError)
   	{
-  		if( $configuration[ 'debug'][ 'enabled'] == "1")
+  		if( $configuration->GetSetting('debug', 'enabled'))
 			echo "Database not configured";
   	}
-    
+
  	// RouteRegistration is loaded per session (PHP doesn't have application level vars)
 	if( isset($_REQUEST["reload"])) {
 		$_SESSION["RouteRegister"] = null;
 	}
   
-  RouteRegister::GetInstance();
+    RouteRegister::GetInstance();
 ?>

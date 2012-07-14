@@ -37,13 +37,13 @@
 		private function __construct( )
 		{
 			$this->_userData = array( );
-			$this->_configuration = Configuration::GetInstance( );
-            $this->_siteProfile = $this->_configuration["configuration"]["siteprofile"];
+			$this->_configuration = SimpleConfiguration::GetInstance( );
+            $this->_siteProfile = $this->_configuration->GetSetting('defaults', 'siteprofile');
 
-			$this->_sessionExpiry = $this->_configuration[ "configuration"][ "sessionlength"];
-			$this->_cookieName = $this->_configuration[ $this->_siteProfile][ "cookiename"];
-			$this->_cookiePath = $this->_configuration[ $this->_siteProfile][ "cookiepath"];
-			$this->_cookieDomain = $this->_configuration[ $this->_siteProfile][ "cookiedomain"];
+			$this->_sessionExpiry = $this->_configuration->GetSetting('defaults', 'sessionlength');
+			$this->_cookieName = $this->_configuration->GetSetting($this->_siteProfile, "cookiename");
+			$this->_cookiePath = $this->_configuration->GetSetting($this->_siteProfile, "cookiepath");
+			$this->_cookieDomain = $this->_configuration->GetSetting($this->_siteProfile, "cookiedomain");
 		}
 		
 		public static function GetInstance( )

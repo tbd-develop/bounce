@@ -2,7 +2,7 @@
 <h3>Profiles</h3>
 <p>Profiles are collections of settings such as database connection, site path etc. Useful for live, test and development.</p>
 </div>
-<form class="small" action="/install/createprofile" method="post">
+<form id="createprofile" class="small" action="/install/createprofile" method="post">
     <div class="field">
         <div class="label">name</div>
         <div class="input"><input type="text" name="profilename" size="30" />(ie. test, live, development)</div>
@@ -13,7 +13,7 @@
     </div>
     <div class="field">
         <div class="label">database</div>
-        <div class="input"><select name="database"></select></div>
+        <div class="input"><select name="databaseprofile"></select></div>
     </div>
     <div class="field">
         <div class="label">cookie name</div>

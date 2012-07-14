@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<configuration>
+    <directories>
+        <key name="controllers" value="/controllers" />
+        <key name="areas" value="/areas" />
+        <key name="views" value="/views" />
+        <key name="base" value="/core" />
+    </directories>
+</configuration>

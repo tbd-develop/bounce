@@ -26,7 +26,7 @@ class StylesheetRegistrar
   	
   	public function __construct( )
     {
-      $this->_configuration = Configuration::GetInstance( );
+      $this->_configuration = SimpleConfiguration::GetInstance( );
       $this->_session = Session::GetInstance( );
     }
     

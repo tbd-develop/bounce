@@ -11,6 +11,13 @@ $(function () {
         return false;
     });
 
+    $("#createprofile").submit(function () {
+       $(this).ajaxSubmit( {
+           success: function (result) {
+           }
+       });
+    });
+
     loadDatabaseList();
 });
 
@@ -20,7 +27,7 @@ function loadDatabaseList() {
         type: 'get',
         contentType: 'application/json',
         success: function (results) {
-            $("select[name='database']").empty();
+            $("select[name='databaseprofile']").empty();
             $("#databaseprofiles tbody").empty();
 
             $.each(results, function (index, element) {
@@ -33,7 +40,7 @@ function loadDatabaseList() {
                 var option = "<option value=\"" + element.profilename + "\">" + element.profilename + "</option>";
 
                 $("#databaseprofiles").append(node);
-                $("select[name='database']").append(option);
+                $("select[name='databaseprofile']").append(option);
             });
         }
     });

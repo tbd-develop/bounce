@@ -3,17 +3,7 @@
     <p>You need to be able to store users and other such information. You can configure as many database connections as you like, so it's easier to swap them out during
     testing, development etc.</p>
 </div>
-<h4>Existing Profiles</h4>
-<table id="databaseprofiles">
-<thead>
-<tr>
-    <th>Profile</th>
-    <th>Connector</th>
-    <th>Database</th>
-</tr>
-</thead>
-    <tbody></tbody>
-</table>
+
 <div class="align-left">
 <form id="createdatabase" class="small" method="post" action="/install/createdatabase">
     <div class="field">
@@ -22,7 +12,7 @@
     </div>
     <div class="field">
         <div class="label">connector</div>
-        <div class="input"><input type="text" size="30" name="connector" value="MysqliConnector" /></div>
+        <div class="input"><select name="connector"><option value="MysqliConnector" selected>Mysqli</option></select></div>
     </div>
     <div class="field">
         <div class="label">host</div>
@@ -45,3 +35,14 @@
     </div>
 </form>
 </div>
+<h4>Existing Profiles</h4>
+<table id="databaseprofiles">
+    <thead>
+    <tr>
+        <th>Profile</th>
+        <th>Connector</th>
+        <th>Database</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>

@@ -34,7 +34,7 @@
     	if( func_num_args( ) > 0)    	   
         	$this->_arguments = func_get_arg( 0 );
         
-      	$this->_configuration = Configuration::GetInstance( );
+      	$this->_configuration = SimpleConfiguration::GetInstance( );
       
       	$this->Load =& Renderer::GetInstance( );
 		$this->Service =& RESTService::GetInstance();

@@ -18,7 +18,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-  class Database
+class DatabaseSettings
+{
+    public $Connector;
+    public $UserName;
+    public $Password;
+    public $Host;
+    public $Database;
+}
+
+class Database
   {
     private static $_instance;
     private $_connection;
@@ -28,38 +37,51 @@
     {
       try 
 	  {
-		$this->_configuration = Configuration::GetInstance( );
+        $settings = $this->getDatabaseSettings();
 
-		if( $this->_configuration)
-		{
-            $siteprofile = $this->_configuration['configuration']['siteprofile'];
+        $databaseClass = new ReflectionClass( (string)$settings->Connector);
 
-            $databaseConnector = $this->_configuration[ $siteprofile][ "database" ];
-            $connector = $this->_configuration[ $databaseConnector ][ "connector"];
+        if( $databaseClass->isInstantiable( ))
+        {
+            $this->_connection = $databaseClass->newInstance( );
 
-		    $databaseClass = new ReflectionClass( $connector);
-		  
-		    if( $databaseClass->isInstantiable( ))
-		    {
-		        $this->_connection = $databaseClass->newInstance( );
-		    
-    		    $this->_connection->Connect( $this->_configuration[ $databaseConnector][ "username"],
-		                                  $this->_configuration[ $databaseConnector][ "password"],
-		                                  $this->_configuration[ $databaseConnector][ "host"],
-		                                  $this->_configuration[ $databaseConnector][ "database"]);
-            }
+            $this->_connection->Connect( $settings->UserName, $settings->Password, $settings->Host, $settings->Database);
         }
       }
 	  catch( Exception $error)
       {
         throw new DatabaseException( "Error in database");
       }
-    }    
-    
-	/*
-	 * 
-	 * @return IDatabaseConnection
-	 */
+    }
+
+    private function getDatabaseSettings()
+    {
+      $this->_configuration = SimpleConfiguration::GetInstance( );
+
+      if( $this->_configuration)
+      {
+          $settings = new DatabaseSettings();
+
+          $siteprofile = $this->_configuration->GetSetting('defaults', 'siteprofile', 'default');
+
+          $databaseSettings = $this->_configuration->GetSetting($siteprofile, 'database');
+
+          $databaseProfile = $this->_configuration->GetSettingsCollection($databaseSettings);
+
+          $settings->Connector = $databaseProfile['connector'];
+          $settings->UserName = $databaseProfile['username'];
+          $settings->Password = $databaseProfile['password'];
+          $settings->Host = $databaseProfile['host'];
+          $settings->Database = $databaseProfile['database'];
+      }
+
+      return $settings;
+    }
+
+      /*
+      *
+      * @return IDatabaseConnection
+      */
     public function &Connection( )
     {
         if( !isset( self::$_instance))

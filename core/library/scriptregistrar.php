@@ -27,10 +27,10 @@ class ScriptRegistrar
   	
   	public function __construct( )
     {
-      $this->_configuration = Configuration::GetInstance( );
+      $this->_configuration = SimpleConfiguration::GetInstance( );
       $this->_session = Session::GetInstance( );
       
-      $this->_scriptsPath = $this->_configuration->GetSitePath("configuration","scripts-directory");
+      $this->_scriptsPath = $this->_configuration->GetSetting("defaults","scripts-directory");
     }
     
     public static function &GetInstance( )
