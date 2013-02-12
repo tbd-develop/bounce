@@ -39,16 +39,16 @@
     <dummy>
         <key name="connector" value="DummyConnector" />
         <key name="host" value="localhost" />
-        <key name="database" value="mortong_newdb" />
-        <key name="username" value="mortong" />
-        <key name="password" value="golfing" />
+        <key name="database" value="db_name" />
+        <key name="username" value="db_user" />
+        <key name="password" value="db_pass" />
     </dummy>
     <debug>
         <key name="connector" value="MysqliConnector" />
         <key name="host" value="localhost" />
-        <key name="database" value="mortong_newdb" />
-        <key name="username" value="mortong" />
-        <key name="password" value="golfing" />
+        <key name="database" value="db_name" />
+        <key name="username" value="db_user" />
+        <key name="password" value="db_pass" />
     </debug>
 
 	<email>
