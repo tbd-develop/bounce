@@ -1,4 +1,8 @@
 <?php
+	/*
+		Bounce Framework 2013		
+	*/
+
 
 	class AutoLoader
 	{
@@ -18,14 +22,7 @@
 			if( $this->_searchTree == null)
 				$this->BuildSearchTree();
 
-    		if( isset( $this->_configuration))
-    		{    	
-				foreach( $this->_configuration[ "directories"] as $directory)
-				{
-					if( $this->CheckDir( ROOT_PATH . $directory, strtolower( $className)))
-						break;
-				}
-    		} 
+			$this->LoadClass(strtolower($className));			
 		}
 
 		private function BuildSearchTree() 
@@ -72,8 +69,8 @@
 				}
 			}
 		}
-		
-		public function CheckDir( $directory, $className)
+
+		private function LoadClass( $className)
   		{
   			$result = false;
   			$filename = "{$className}.php";
