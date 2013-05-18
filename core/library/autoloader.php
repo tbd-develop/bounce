@@ -2,58 +2,91 @@
 
 	class AutoLoader
 	{
+		private $_configuration;
+		private $_searchTree;
+
 		public function __construct() 
 		{
-			spl_autoload_register(array($this, 'loader'));
+			spl_autoload_register(array($this, 'loader'));			
 		}		
 		
 		public function loader($className) 
 		{
-			$configuration = SimpleConfiguration::GetInstance( );
+			if( $this->_configuration == null) 
+				$this->_configuration = Configuration::GetInstance( );	
 
-            $directoryList = $configuration->GetSettingsCollection('directories');
+			if( $this->_searchTree == null)
+				$this->BuildSearchTree();
 
-            foreach( $directoryList as $key => $directory)
-            {
-                if( $this->CheckDir( ROOT_PATH . $directory, strtolower( $className)))
-                    break;
-            }
+    		if( isset( $this->_configuration))
+    		{    	
+				foreach( $this->_configuration[ "directories"] as $directory)
+				{
+					if( $this->CheckDir( ROOT_PATH . $directory, strtolower( $className)))
+						break;
+				}
+    		} 
 		}
-		
-		public function CheckDir( $directory, $classname)
-  		{
-  			$result = false;			
-  			
-  			if( !file_exists( "{$directory}/{$classname}.php"))
-  			{
-  				if( !file_exists( "{$directory}/exclude"))
-  				{					
-  					if( file_exists( $directory))
-  					{					
-						$dirInfo = dir( $directory);
-			        		
-						while( ($subdirectory = $dirInfo->Read( )) !== false)
-			        	{       						
-							$searchSubDirectory = $directory . "/" . $subdirectory;
-							
-							if( is_dir( $searchSubDirectory ) && $subdirectory != ".." && $subdirectory != ".")		
+
+		private function BuildSearchTree() 
+		{
+			$this->_searchTree = array();
+
+			foreach( $this->_configuration["directories"] as $directory) 
+			{
+				$this->SearchTreeNode(ROOT_PATH . $directory);
+			}
+		}
+
+		private function SearchTreeNode($directory)
+		{
+			if( !is_dir($directory))
+				return;
+
+			$dirInfo = dir( $directory);
+
+			while($entry = $dirInfo->Read()) 
+			{
+				if( $entry != "." && $entry != "..") 
+				{
+					$fullFilePath = $directory . "/" . $entry;
+
+					if( is_file($fullFilePath))
+					{
+						$path = pathinfo($entry);
+
+						if( $path["extension"] === "php") 
+						{					
+							if( array_key_exists($entry, $this->_searchTree))
 							{
-								if( $this->CheckDir( $searchSubDirectory, $classname))
-								{
-									$result = true;
-									break;
-								}					
+								array_push($this->_searchTree[$entry], $directory);
+							} else {
+								$this->_searchTree[$entry] = array( $directory );
 							}
 						}
-  					}
-  				}  	        
-  			} 
-  			else
+					} 
+					elseif ( is_dir( $fullFilePath))
+					{
+						$this->SearchTreeNode($fullFilePath);
+					} 
+				}
+			}
+		}
+		
+		public function CheckDir( $directory, $className)
+  		{
+  			$result = false;
+  			$filename = "{$className}.php";
+
+  			if( array_key_exists($filename, $this->_searchTree))
   			{
-	  			include_once( "{$directory}/{$classname}.php");
-  				$result = true; 
-  			}  		
-  		
+  				$paths = $this->_searchTree[$filename];
+
+				require_once($paths[0] . "//" . $filename);
+
+				$result = true;
+  			}
+  			
   			return $result;
   		}
 	}
