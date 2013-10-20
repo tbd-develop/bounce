@@ -1,8 +1,8 @@
 <?php
 /*
-	bounce Framework - Configuration object
+	Bounce Framework - Configuration object
 
-    Copyright (C) 2012-2012  Terry Burns-Dyson
+    Copyright (C) 2013-2012  Terry Burns-Dyson
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ class Application
     {
         if( self::$applicationRouter == null)
         {
-            self::$applicationRouter = new ApplicationRouter(SimpleConfiguration::GetInstance(), RouteRegister::GetInstance());
+            self::$applicationRouter = new ApplicationRouter(Configuration::GetInstance(), RouteRegister::GetInstance());
         }
 
         return self::$applicationRouter;

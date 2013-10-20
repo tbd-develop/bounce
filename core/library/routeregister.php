@@ -1,6 +1,6 @@
 <?php
 /*
-	bounce Framework - Welcome Controller
+	Bounce Framework - Welcome Controller 
 	
     Copyright (C) 2012  Terry Burns-Dyson
 
@@ -36,8 +36,8 @@ class RouteRegister implements IRouteRegister
 	private $_routes;
 	private $_areas;
 
-	private function __construct($configuration) {
-		$this->_configuration = $configuration;
+	private function __construct() {
+		$this->_configuration = Configuration::GetSite();
 		$this->_routes = array();
 		$this->_areas = array( );
 	}
@@ -46,7 +46,7 @@ class RouteRegister implements IRouteRegister
 		if (!isset(self::$_instance)) {		
 			$c = __CLASS__;
 
-            self::$_instance = new $c(SimpleConfiguration::GetInstance());
+            self::$_instance = new $c();
             self::$_instance->RegisterRoutes( );
         }
 
@@ -55,7 +55,7 @@ class RouteRegister implements IRouteRegister
 		
 	public function RegisterRoutes( ) 
 	{	
-		foreach( $this->_configuration->GetSettingsCollection("directories") as $key => $directory)
+		foreach( $this->_configuration->paths as $directory)
 		{					
 			$this->ScanDirectory( ROOT_PATH . $directory);			
 		}
@@ -77,7 +77,11 @@ class RouteRegister implements IRouteRegister
         while (($entry = readdir($handle))) {
             $path = $directory . "/" . $entry;
 
+			if( file_exists($directory . "/ignore"))
+           		continue;
+           	
             if ($entry != ".." && $entry != ".") {
+
                 if (is_dir($path)) {
                     $this->ScanDirectory($path);
                 } else {
@@ -123,20 +127,39 @@ class RouteRegister implements IRouteRegister
 	}
 	
 	public function MatchRoute( $route) {
-		$helper = new Helper( );
+ 		$helper = new Helper( );
 		$result = null;
 		$uriElements = explode( "/", substr($route, 1));
 								
 		if( count($uriElements) > 1 ) {
 			if( in_array( $uriElements[0], $this->_areas )) {
-				$fileToInclude = ROOT_PATH . "/areas/" . $uriElements[0] . "/controllers/" . $uriElements[1] . ".php";
-								
-				$helper->Load( $fileToInclude);
+                $area = $uriElements[0];
 
-                $result = Route::FromParameters($uriElements[0],
-								 $uriElements[1],
-								 count($uriElements) > 2 ? $uriElements[2] : null,
-								 count($uriElements) > 3 ? array_splice($uriElements, 3) : null);
+                if( stripos($uriElements[1], "?")){
+                    $components = explode("?", $uriElements[1]);
+                    $method = null;
+                    $controller = $components[0];
+
+                    $parameters = array();
+
+                    foreach(explode("&", $components[1]) as $paramElements){
+                        $properties = explode("=", $paramElements);
+
+                        $parameters[$properties[0]] = $properties[1];
+                    }
+                } else {
+                    $controller = $uriElements[1];
+
+                    $method = count($uriElements) > 2 ? $uriElements[2] : null;
+                    $parameters = count($uriElements) > 3 ? array_splice($uriElements, 3) : null;
+                }
+
+                $fileToInclude = ROOT_PATH . "/areas/" . $area . "/controllers/" . $controller . ".php";
+
+                $helper->Load( $fileToInclude);
+
+                $result = Route::FromParameters($area, $controller, $method, $parameters);
+
             }
 		}
 		

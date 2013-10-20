@@ -29,12 +29,14 @@ class Route
         $route->_area = $area;
         $route->_controller = $controller;
 
-        if(isset( $method) && stripos($method, "?"))
+        if(isset( $method) && stripos($method, "?")) {
             $route->_method = $route->GetMethodNameFromElementString($method);
-        else if(isset($method))
-            $route->_method = $method;
-        else
-            $route->_method = "index";
+            $params = $route->ExtractParamsFromQueryString($method);
+        }
+        else {
+            if(isset($method))
+                $route->_method = $method;
+        }
 
         $route->_params = $params;
 
@@ -65,7 +67,7 @@ class Route
 
         $this->_area = null;
         $this->_controller = null;
-        $this->_method = "index";
+        $this->_method = null;
         $this->_params = null;
 
         $this->_controller = $elements[RouteParameters::ControllerIdx];
@@ -99,7 +101,7 @@ class Route
 
     public function ExtractParamsFromQueryString($parameters) {
         $result = array();
-
+        $parameters = substr($parameters, stripos($parameters, '?'));
         $queryParams = explode("&", $parameters);
 
         foreach($queryParams as $param) {
