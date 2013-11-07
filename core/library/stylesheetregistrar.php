@@ -1,6 +1,6 @@
 <?php
 /*
-	bounce Framework - Base Controller class
+	Bounce Framework - Base Controller class
 	
     Copyright (C) 2011  Terry Burns-Dyson
 
@@ -20,13 +20,13 @@
 
 class StylesheetRegistrar
 {
-	private static $_instance;
+    private static $_instance;
   	private $_session;
   	private $_stylesheets;
   	
   	public function __construct( )
     {
-      $this->_configuration = SimpleConfiguration::GetInstance( );
+      $this->_configuration = Configuration::GetInstance( );
       $this->_session = Session::GetInstance( );
     }
     
@@ -47,25 +47,43 @@ class StylesheetRegistrar
 		$this->_stylesheets = array();
 	}
     
-    public function AddStylesheet( $stylesheet ) 
+    public function AddStylesheet( $stylesheet, $inTemplate = true)
     {
-		if( !array_key_exists( $stylesheet, $this->_stylesheets)) 
-		{
-			array_push($this->_stylesheets, $stylesheet);
-		}
+        if( !array_key_exists( $stylesheet, $this->_stylesheets)) {
+            array_push($this->_stylesheets, array("sheet" => $stylesheet, "template" => $inTemplate));
+          }
 	}
 	
 	public function Render( $template) 
 	{
-		$outhtml = "";
+		$outHtml = "";
 		
 		foreach( $this->_stylesheets as $stylesheet) 
 		{
-			$outhtml .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$template}{$stylesheet}\" />\r\n";
+            $path = $stylesheet['sheet'];
+
+            if( $stylesheet['template'])
+                $outHtml .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$template}{$path}\" />\r\n";
+            else {
+                $path = $this->CssFileIsShared($path);
+
+                $outHtml .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$path}\" />\r\n";
+            }
 		}
 		
-		echo $outhtml;
+		echo $outHtml;
 	}
+
+  private function CssFileIsShared($filename) {
+    $templates = $this->_configuration->GetSite()->template->directory;
+
+    $path = $templates . "/shared/" . $filename;
+
+    if( file_exists(ROOT_PATH . $path))
+      return $path;
+
+    return $filename;
+  }
 }
 
 ?>

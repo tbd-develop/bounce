@@ -1,6 +1,6 @@
 <?php
 /*
- bounce Framework - userfactory.php
+ Bounce Framework - userfactory.php
 
  Copyright (C) 2012  Terry Burns-Dyson
 
@@ -20,27 +20,23 @@
 class UserFactory
 {
     private static $_instance;
+    private $_configuration;
     private $_user;
 
-    private function __construct() { }
+    private function __construct(IUser $user) {
+        $this->_configuration = Configuration::GetInstance();
+        $this->_user = $user;
+    }
+
+    public static function Register(IUser $user) {
+        if( !isset( self::$_instance))
+        {
+            self::$_instance = new UserFactory($user);
+        }
+    }
 
     public static function &GetInstance( )
     {
-        if( !isset( self::$_instance))
-        {
-            self::$_instance = new UserFactory();
-
-            self::$_instance->GetUser();
-        }
-
         return self::$_instance->_user;
-    }
-
-    private function GetUser() {
-        if( !isset($this->_user)) {
-            $this->_user = ThemedUser::GetInstance();
-        }
-
-        return $this->_user;
     }
 }

@@ -3,30 +3,35 @@
 	{	
 		public function index( )
 		{
-			$fail = false;
-			
-			if( isset( $this->_params[ 'username']))
+            $profile = $this->_configuration->GetProfile();
+
+            if( $this->_user != null &&
+                $this->_user->IsLoggedIn() )
+                return $this->Redirect($profile->redirectOnLogin != null ? $profile->redirectOnLogin : "/");
+
+            if( isset( $this->_params['login']))
 			{
-				$fail = $this->_user->Login( $this->_params[ 'username'], $this->_params[ 'userpass']);
-			} 
-			else
-			{
-				$fail = true;
-			}
-				
-			if( $fail)
-			{
-				$this->_params[ "pageTitle"] = "Invalid Login";
-				$this->_params[ "error"] = "Invalid username and/or password.";
-				
-				$this->Load->View( "error", "index", $this->_params);
+                if( !$this->_user->Login($this->_params['login'], $this->_params['pass']))
+                {
+                    $this->_params[ "pageTitle"] = "Invalid Login";
+                    $this->_params[ "error"] = "Invalid username and/or password.";
+
+                    return $this->View( "index", $this->_params, "login_pagebody");
+                } else
+                    return $this->Redirect($profile->redirectOnLogin != null ? $profile->redirectOnLogin : "/");
 			}
 			else
 			{
 				$this->_params[ "user"] = $this->_user;	
 				
-				$this->Load->View( strtolower( get_class( $this)), "index", $this->_params);
+				return $this->View( "index", $this->_params, "login_pagebody");
 			}						
-		}		
+		}
+
+        public function logout() {
+            $this->_user->Logout();
+
+            return $this->Redirect("/");
+        }
 	}
 ?>

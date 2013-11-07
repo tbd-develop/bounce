@@ -11,10 +11,13 @@ class View
     public $ViewName;
     public $Controller;
     public $Model;
+    public $Parameters;
+    public $PageTemplate;
 
-    public function __construct($controller, $name ) {
+    public function __construct($controller, $name) {
         $this->Controller = $controller;
-        $this->ViewName = $name;
+
+        return $this->ViewName = $name;
     }
 
     public function Render() {}

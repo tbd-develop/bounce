@@ -18,12 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class Helper{
-	public function Load($file) {
-		include_once($file);
-	}	
-}
-
 interface IRouteRegister
 {
     function MatchRoute($route);

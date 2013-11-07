@@ -1,6 +1,6 @@
 <?php
 /*
-	bounce Framework - Base Controller class
+	Bounce Framework - Base Controller class
 	
     Copyright (C) 2011, 2012  Terry Burns-Dyson
 
@@ -27,10 +27,10 @@ class ScriptRegistrar
   	
   	public function __construct( )
     {
-      $this->_configuration = SimpleConfiguration::GetInstance( );
+      $this->_configuration = Configuration::GetInstance( );
       $this->_session = Session::GetInstance( );
       
-      $this->_scriptsPath = $this->_configuration->GetSetting("defaults","scripts-directory");
+      $this->_scriptsPath = $this->_configuration->GetSite()->scripts->directory;
     }
     
     public static function &GetInstance( )
@@ -54,41 +54,50 @@ class ScriptRegistrar
     {
 		if( !array_key_exists( $script, $this->_scripts)) 
 		{
-			array_push($this->_scripts, array( "script" => $script, "renderFromTemplate" => $renderFromTemplate));
+			array_push($this->_scripts, array( "script" => $script, "template" => $renderFromTemplate));
 		}
 	}
+
+    public function AddScripts($scriptArray) {
+        foreach($scriptArray as $script) {
+            if( !array_key_exists($script['path'], $this->_scripts)) {
+                array_push($this->_scripts,
+                    array("script" => $script['path'], "template" => isset($script['renderFromTemplate']) ? $script['renderFromTemplate'] : false));
+            }
+        }
+    }
 	
 	public function Render( $template ) 
 	{
 		$outhtml = "";
 
-		foreach( $this->_scripts as $key => $value) 
+		foreach( $this->_scripts as $value)
 		{
             $script = $value["script"];
 
-            $renderFromTemplate = $value["renderFromTemplate"];
+            $renderFromTemplate = $value["template"];
 
-			if( !empty($template) && $renderFromTemplate)
-			{
-				$scriptToLoad = $template . $script;
-			}
+            if( !empty($template) && $renderFromTemplate)
+            {
+                $scriptToLoad = $template . $script;
+            }
             else if( stripos($script, 'http') !== false && stripos($script, 'http') == 0)
             {
                 $scriptToLoad = $script;
             }
-			else if( !empty($this->_scriptsPath))
-			{
-				$scriptToLoad = $this->_scriptsPath . $script;
-			} 
-			else 
-			{
-				$scriptToLoad = "";
-			}
+            else if( !empty($this->_scriptsPath))
+            {
+                $scriptToLoad = $this->_scriptsPath . $script;
+            }
+            else
+            {
+                $scriptToLoad = "";
+            }
 
-			if( !empty($scriptToLoad)) 
-			{
-				$outhtml .= "<script type=\"text/javascript\" src=\"{$scriptToLoad}\"></script>\r\n";
-			}			
+            if( !empty($scriptToLoad))
+            {
+                $outhtml .= "<script type=\"text/javascript\" src=\"{$scriptToLoad}\"></script>\r\n";
+            }
 		}
 		
 		echo $outhtml;

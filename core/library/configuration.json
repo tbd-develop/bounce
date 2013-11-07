@@ -1,0 +1,50 @@
+{
+    "site": {
+        "title" : "Bounce Framework",
+        "template" : {
+            "default" : "default",
+            "directory" : "/templates"
+        },
+        "scripts" : {
+            "directory" : "/scripts"
+        },
+        "sessionLength" : 5,
+        "profile" : "devsite",
+        "debug" : true,
+        "paths" : [
+            "/controllers",
+            "/areas",
+            "/views",
+            "/core",
+            "/templates",
+            "/libraries",
+            "/includes",
+            "/models",
+            "/resources",
+            "/services"
+        ],
+        "routes" : {
+            "defaultController" : "login" ,
+            "defaultView" : "index"
+        }
+    },
+    "profiles" : [
+        {
+            "name" : "devsite",
+            "rootpath" : "",
+            "redirectOnLogin" : "/",
+            "cookie" : {
+                "name" : "yoursite",
+                "domain" : ".",
+                "path" : "/"
+            },
+            "database" : {
+                "connector" : "MysqliConnector",
+                "host" : "localhost",
+                "name" : "bounce_schema",
+                "username" : "",
+                "password" : ""
+            }
+        }
+    ]
+}

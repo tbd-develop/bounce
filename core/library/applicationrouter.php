@@ -1,8 +1,8 @@
 <?php
 /*
-	bounce Framework - Application Router
+	Bounce Framework - Application Router 
 	
-    Copyright (C) 2012  Terry Burns-Dyson
+    Copyright (C) 2013  Terry Burns-Dyson
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,13 +26,13 @@ class ApplicationRouter
     private $_routeConfiguration;
     private $_renderer;
 
-    public function __construct($configuration,
+    public function __construct(IConfiguration $configuration,
                                 IRouteRegister $routeconfiguration)
     {
-        $this->_configuration = $configuration;
+        $this->_configuration = $configuration->GetSite();
 
-        $this->_controller = $this->_configuration->GetSetting("routes", "default_controller");
-        $this->_view = $this->_configuration->GetSetting("routes", "default_view");
+        $this->_controller = $this->_configuration->routes->defaultController;
+        $this->_view = $this->_configuration->routes->defaultView;
 
         $this->_routeConfiguration = $routeconfiguration;
 
@@ -54,7 +54,7 @@ class ApplicationRouter
     protected function ExecuteRoute(Route $route)
     {
         try
-        {
+        {      
             $controllerName = $route->GetArea() != null ? $route->GetArea() . "\\" . $route->GetController() : $route->GetController();
 
             $controllerType = new ReflectionClass($controllerName);
@@ -64,8 +64,16 @@ class ApplicationRouter
             $controllerType = new ReflectionClass($this->_controller);
         }
 
-        if ($controllerType->isInstantiable()) {
-            $this->BuildAndInvokeControllerMethodCall($controllerType, $route);
+        try
+        {
+            if ($controllerType->isInstantiable()) {
+                $this->BuildAndInvokeControllerMethodCall($controllerType, $route);
+            }
+        }
+        catch(Exception $exc)
+        {
+            http_response_code(500);
+            throw $exc;
         }
     }
 
@@ -88,32 +96,40 @@ class ApplicationRouter
         $controllerInstance->SetArguments($route->GetParams());
         $controllerInstance->SetArea($route->GetArea());
 
-        if ($permitted) {
-            if ($route->GetMethod())
-            {
-                if ($controllerType->hasMethod($route->GetMethod()))
-                {
-                    $method = new ReflectionMethod($controllerType->getName(), $route->GetMethod());
+        if ($permitted)
+        {
+            $methodNameToCall = $route->GetMethod() && $controllerType->hasMethod($route->GetMethod()) ? 
+                                    $route->GetMethod() :  
+                                    (
+                                        $controllerType->hasMethod(strtolower($_SERVER['REQUEST_METHOD'])) ?
+                                            strtolower($_SERVER['REQUEST_METHOD']) : "index"
+                                    );
 
-                    if (count($route->GetParams()) > 0 || count($_POST) > 0)
-                    {
-                        if (count($_POST) > 0)
-                            $params = $this->ModelBind($route, $method);
-                        else
-                            $params = $this->ParameterBind($method, $route->GetParams());
+            $method = new ReflectionMethod($controllerType->getName(), $methodNameToCall);
 
-                        $result = $method->invokeArgs($controllerInstance, $params);
-                    }
-                    else
-                        $result = $method->invoke($controllerInstance);
-                }
+            if( !isset($method))
+                throw new Exception("Method ${methodNameToCall} not supported on {$route->GetController()}");
+
+            if( count($route->GetParams()) > 0 || count($_POST) > 0) {
+                if( count($_POST) > 0) 
+                    $params = $this->ModelBind($route, $method);
                 else
-                {
-                    $method = $route->GetMethod();
-                    $controller = $route->GetController();
+                    $params = $this->ParameterBind($method, $route->GetParams());
 
-                    throw new Exception("Method ${method} not supported on ${controller}");
-                }
+                $result = $method->invokeArgs($controllerInstance, $params);
+            }
+            else
+            {
+                if( $method == "delete" ||
+                    isset( $_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json')
+                {
+                    $jsonData = file_get_contents('php://input');
+
+                    $params = $this->JsonDataBind($method, $jsonData);
+
+                    $result = $method->invokeArgs($controllerInstance, $params);
+                } else
+                    $result = $method->invoke($controllerInstance);
             }
         }
         else
@@ -128,28 +144,34 @@ class ApplicationRouter
                 throw new Exception("You are not permitted to view the resource");
         }
 
+        if($controllerInstance instanceof IRequireNoRendering)
+            return;
+
         if( $result instanceof IRedirect)
             $result->Render();
         else
-            $this->_renderer->RenderResult($result);
+            $this->_renderer->RenderResult($result, $route);
     }
 
-    private function ParameterBind( $method, $params) {
+    private function ParameterBind( $method, $params)
+    {
         $result = array();
 
         $methodParameters = $method->getParameters();
 
         foreach ($methodParameters as $parameter)
         {
-            foreach( $params as $cnt => $arg) {
-                if( is_array($arg)) {
-                    if( isset($arg[$parameter->getName()] ))
-                    {
-                        $result[] = $arg[$parameter->getName()];
-                    }
-                }
-                else {
-                    $result[$parameter->getName()] = $params[$cnt];
+            $parameterName = $parameter->getName();
+
+            if( array_key_exists($parameterName, $params))
+                $result[$parameterName] = $params[$parameterName];
+            else {
+                foreach( $params as $cnt => $arg) {
+                    if( is_array($arg)) 
+                        if( isset($arg[$parameter->getName()] ))
+                            $result[] = $arg[$parameter->getName()];
+                    else 
+                        $result[$parameter->getName()] = $params[$cnt];
                 }
             }
         }
@@ -169,9 +191,8 @@ class ApplicationRouter
                 if( $param->getClass( ) != null ) {
                     $typeArg = $this->GetTypeParameter($param);
 
-                    if (!class_exists($typeArg)) {
+                    if (!class_exists($typeArg))
                         break;
-                    }
 
                     $classType = new ReflectionClass($typeArg);
                     $classInstance = $classType->newInstance();
@@ -179,21 +200,32 @@ class ApplicationRouter
                     $properties = $classType->getProperties(ReflectionProperty::IS_PUBLIC);
 
                     foreach ($properties as $property)
-                    {
                         if (isset($_POST[$property->name]))
                             $property->setValue($classInstance, $_POST[$property->name]);
-                    }
 
                     $params[] = $classInstance;
                 }
                 else
-                {
                     $params[$param->getName()] = $_POST[$param->getName()];
-                }
             }
 
-            if (count($params) == 0) {
+            if (count($params) == 0)
                 $this->ParameterBind( $method, $route->GetParams());
+        }
+
+        return $params;
+    }
+
+    protected function JsonDataBind($method, $jsonParameters) {
+        $params = array();
+
+        if( $method->getNumberOfParameters() > 0) {
+            $formData = json_decode($jsonParameters);
+
+            $methodParameters = $method->getParameters();
+
+            foreach($methodParameters as $param) {
+                $params[$param->getName()] = $formData;
             }
         }
 

@@ -1,8 +1,8 @@
 <?php
 /*
-	bounce Framework - Renderer for page building and display
+	Bounce Framework - Renderer for page building and display
 	
-    Copyright (C) 2012  Terry Burns-Dyson
+    Copyright (C) 2013  Terry Burns-Dyson
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,14 +22,16 @@
   {
     private static $_instance;
     private $_configuration;
+    private $_template;
     private $_session;
 
     private function __construct( )
     {
-      $this->_configuration = SimpleConfiguration::GetInstance( );
-      $this->_session = Session::GetInstance( );
+        $this->_configuration = Configuration::GetInstance( );
+        $this->_template = $this->_configuration->GetSite()->template;
+        $this->_session = Session::GetInstance( );
     }
-    
+
     public static function &GetInstance( )
     {
       if( !isset( self::$_instance))
@@ -42,24 +44,28 @@
       return self::$_instance;
     }
 
-   public function RenderResult(View $view)
+   public function RenderResult(View $view, Route $route)
    {
         if( $view instanceof ServiceView)
             RESTService::GetInstance()->SetResponse($view->Controller, $view->ResponseName, $view->ResponseData(), $view->Type );
         else
-            $this->OutputView($view);
+            $this->OutputView($view, $route);
    }
 
-    public function SendFile($fileName) {
+    public function SendFile($fileName, $subDirectory = '', $contentType = 'image/jpg')
+    {
         $user = UserFactory::GetInstance();
 
         $userTheme = $user->getTheme();
 
-        $template = $userTheme != null ? $userTheme : $this->_configuration->GetSetting('defaults', 'default_template');
+        $template = $userTheme != null ? $userTheme : $this->_template->default;
 
-        $filePath =  ROOT_PATH . $this->_configuration->GetSetting('directories','templates') .DIRSEP . $template . DIRSEP . $fileName;
+        if( $subDirectory == "")
+            $filePath =  ROOT_PATH . $this->_template->directory .DIRSEP . $template . DIRSEP . $fileName;
+        else
+            $filePath =  ROOT_PATH . $this->_template->directory .DIRSEP . $template . DIRSEP . $subDirectory . DIRSEP . $fileName;
 
-        header('Content-Type: image/jpg');
+        header("Content-Type: ${contentType}");
         header('Content-Length: ' . filesize($filePath));
 
         readfile($filePath);
@@ -67,10 +73,11 @@
         exit();
     }
 
-    protected function OutputView( $view)
+    protected function OutputView( $view, $route)
 	{
         $controller = $view->Controller;
         $viewName = $view->ViewName;
+        $pageTemplate = $view->PageTemplate == null ? "default_pagebody" : $view->PageTemplate;
         $model = $view->Model;
         $isPartial = $view instanceof IPartialView;
 
@@ -90,56 +97,39 @@
 
             $userTheme = $user->getTheme();
 							
-		    $template = $userTheme != null ? $userTheme : $this->_configuration->GetSetting('defaults', 'default_template');
+		    $template = $userTheme != null ? $userTheme : $this->_template->default;
 
-			$view = $this->FindViewTemplate( $controllerName, $controller->GetArea(), $viewName);
+			$viewToRender = $this->FindViewTemplate( $controllerName, $controller->GetArea(), $viewName);
 
-			if( $view == null ) {
+			if( $viewToRender == null ) {
 				throw new Exception( "Failed to load '${viewName}'");
 			}
-							
-			$params[ 'template'] = HTTP_ROOT . $this->_configuration->GetSetting( 'directories','templates') . "/" . $template;
-			$params[ 'library'] = HTTP_ROOT . $this->_configuration->GetSetting('directories', 'userlibs');
-			$params[ 'siteTitle'] = $this->_configuration->GetSetting( "defaults", "siteTitle");
-            $params[ 'configuration'] = $this->_configuration->GetSettingsCollection('defaults');
+
+            $params = $view->Parameters;
+            $params[ 'route'] = $route;
+			$params[ 'template'] = HTTP_ROOT . $this->_template->directory . "/" . $template;
+			$params[ 'siteTitle'] = $this->_configuration->GetSite()->title;
+            $params[ 'configuration'] = $this->_configuration;
 			$params[ 'controller'] = $controller;
             $params[ 'user'] = $user;
 			$params[ 'viewdata'] = new ViewData();
             $params[ 'html'] = $this;
             $params[ 'Model' ] = $model;
+            $params[ 'ViewPath'] = pathinfo($viewToRender)['dirname'];
 
 			// Generate the view first
-			$viewContent = $this->Compile( $view, $isPartial, $params);
-			
-			$params[ 'pageContent'] = $viewContent;
-			
-			// Include any additional includes as separate compiles but set them as parameters 
-			// for our final page load
-			
-			$includes = $this->_configuration->GetSettingsCollection('includes');
-			
-			if( sizeof( $includes) > 0 )
-			{			
-				foreach( $includes as $key => $value)
-				{					
-					$viewToInclude = ROOT_PATH . $this->_configuration->GetSetting('directories', 'includes') . DIRSEP . "${value}";
-					
-					$params[ $key] = $this->Compile( $viewToInclude, $isPartial, $params);
-				}
-			}
-		
+			$params[ 'pageContent'] = $this->Compile( $viewToRender, $isPartial, $params);
+
 			if( !$isPartial)
 			{
-				// Now compile the default_pagebody with all that has come before
-				$output = $this->Compile( ROOT_PATH . $this->_configuration->GetSetting('directories', 'templates') .
-								DIRSEP . $template . DIRSEP . "default_pagebody.html", $isPartial, $params);
+				// Now compile the supplied page template with all that has come before
+				$output = $this->Compile( ROOT_PATH . $this->_template->directory .
+								DIRSEP . $template . DIRSEP . "${pageTemplate}.html", $isPartial, $params);
 								
 				echo $output;
 			} 
-			else 
-			{
-				echo $viewContent;
-			}
+			else
+				echo $params['pageContent'];
 
             ob_end_flush( );
 		} 
@@ -160,10 +150,10 @@
         $params = array();
 
         if(isset($model))
-        $params["Model"] = $model;
+            $params["Model"] = $model;
 
         if( sizeof( $params) > 0)
-          extract( $params, EXTR_PREFIX_SAME, "glob_");
+            extract( $params, EXTR_PREFIX_SAME, "glob_");
 
         include( $viewToRender );
     }
@@ -178,7 +168,7 @@
 
             $result = $method->invokeArgs($controller, (array) $params);
 
-            $this->OutputView($result);
+            $this->OutputView($result, null);
         }
     }
 

@@ -16,6 +16,10 @@ class Json extends ServiceView
         $this->Type = "json";
     }
 
+    public function TypeIs($type = "json") {
+        $this->Type = $type;
+    }
+
     public function ResponseData() {
         return $this->_model;
     }

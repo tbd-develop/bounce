@@ -78,8 +78,8 @@ class Route
             $this->_method = $methodName;
 
             $this->_params = empty($_POST) ? sizeof($pathToExtract) > 1 ? $this->ExtractParamsFromQueryString($pathToExtract[1]) :
-                                    $this->ExtractOtherElementsToParams($elements) :
-                                    $this->ExtractParamsFromPost($_POST);
+                $this->ExtractOtherElementsToParams($elements) :
+                $this->ExtractParamsFromPost($_POST);
 
             if( sizeof($this->_params) == 0 ) {
                 $this->_params = $this->ExtractOtherElementsToParams($elements);
@@ -101,12 +101,17 @@ class Route
 
     public function ExtractParamsFromQueryString($parameters) {
         $result = array();
-        $parameters = substr($parameters, stripos($parameters, '?'));
-        $queryParams = explode("&", $parameters);
+        $urlComponents = explode('?', $parameters);
 
-        foreach($queryParams as $param) {
-            $components = explode("=", $param);
-            $result[$components[0]] =  $components[1];
+        if( sizeof($urlComponents) > 1) {
+            $action = $urlComponents[0];
+            $arguments = $urlComponents[1];
+            $queryParams = explode("&", $arguments);
+
+            foreach($queryParams as $param) {
+                $components = explode("=", $param);
+                $result[$components[0]] =  $components[1];
+            }
         }
 
         return $result;

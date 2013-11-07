@@ -6,7 +6,6 @@
 		public static $ViewUser = 2;
 		public static $ReadOnly = 4;
 		public static $Editor = 8;
-        public static $Member = 16;
 	}
 	
 	/*

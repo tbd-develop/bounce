@@ -1,8 +1,8 @@
 <?php
 	/*
-	bounce Framework - Session management
+	Bounce Framework - Session management
 	
-    Copyright (C) 2012  Terry Burns-Dyson
+    Copyright (C) 2013  Terry Burns-Dyson
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,16 +20,14 @@
 
 	class UserDTO 
 	{
-		public $UserName;
-		public $Password;
-		public $FirstName;
-		public $LastName;
+        public $Id;
 		public $Email;
-		public $State;
-		public $Country;
-		public $MsnLiveId;
-		public $YahooId;
-		public $AIM;
-		public $Website;
+		public $Role;
+
+        public function __construct($id, $login, $role) {
+            $this->Id = $id;
+            $this->Email = $login;
+            $this->Role = $role;
+        }
 	}
 ?>

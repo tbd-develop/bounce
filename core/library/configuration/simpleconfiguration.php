@@ -21,11 +21,9 @@
     Date: 7/5/12
     Time: 6:01 AM
 */
-class SimpleConfiguration
+class SimpleConfiguration extends Configuration
 {
-    private $_configuration;
-    private $_filePath;
-    private static $_instance;
+    protected $_filePath;
 
     private function __construct($configurationFile) {
         $this->_filePath = $configurationFile;

@@ -1,8 +1,8 @@
 <?php
 /*
-	bounce Framework - IUser Interface
+	Bounce Framework - IUser Interface 
 	
-    Copyright (C) 2012  Terry Burns-Dyson
+    Copyright (C) 2013  Terry Burns-Dyson
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
