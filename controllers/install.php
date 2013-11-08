@@ -52,6 +52,10 @@ class Install extends Controller
         $settings = json_encode($configuration);
         $filename = ROOT_PATH . "{$this->DirSep}core{$this->DirSep}configuration{$this->DirSep}{$configuration->profilename}-database.json";
 
+        if (!file_exists(dirname($filename))) {
+            mkdir(dirname($filename), 0777, true);
+        }
+
         if( file_put_contents("{$filename}", $settings) > 0 ) {
             return $this->Json(json_decode($settings));
         }

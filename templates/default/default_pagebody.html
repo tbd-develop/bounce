@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
 <head>
-    <title><?= $viewdata->PageTitle ?></title>
+    <title><?php echo $viewdata->PageTitle ?></title>
 
     <link rel="stylesheet" type="text/css" href="<?= $template ?>/styles/default.css" />
     <link rel="stylesheet" type="text/css" href="<?= $template ?>/styles/jquery-ui-1.8.21.custom.css" />
@@ -19,6 +19,6 @@
     <script type="text/javascript" src="<?= $template ?>/scripts/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="<?= $template ?>/scripts/jquery-ui-1.8.21.custom.min.js"></script>
     <script type="text/javascript" src="<?= $template ?>/scripts/jquery.form.js"></script>
-    <?= ScriptRegistrar::GetInstance()->Render($template) ?>
+    <?php echo ScriptRegistrar::GetInstance()->Render($template) ?>
 </body>
 </html>

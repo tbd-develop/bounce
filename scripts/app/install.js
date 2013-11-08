@@ -22,7 +22,7 @@ $(function () {
 });
 
 function loadDatabaseList() {
-    $.ajax({
+    /*$.ajax({
         url : '/install/listdatabases',
         type: 'get',
         contentType: 'application/json',
@@ -43,5 +43,5 @@ function loadDatabaseList() {
                 $("select[name='databaseprofile']").append(option);
             });
         }
-    });
+    });*/
 }
