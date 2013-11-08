@@ -43,7 +43,8 @@
 
                   self::$_connection->Connect( $database->username, $database->password,$database->host,$database->name);
                 }
-            }
+            } else
+                self::$_connection = new DummyConnector();
         }
       }
   	  catch( Exception $error)
